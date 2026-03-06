@@ -1,0 +1,8 @@
+services:
+  my-services:
+    build:
+      context: ./app/nginx
+      dockerfile: Dockerfile
+    container_name: my-nginx
+    port:
+      - "80:80"

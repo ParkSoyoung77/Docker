@@ -1,0 +1,64 @@
+services:
+  my-services:
+    # apparmor 보안 프로필을 비활성화하여 컨테이너가 호스트 시스템의 NFS 볼륨에 접근할 수 있도록 설정
+    security_opt: ["apparmor:unconfined"]
+    image: nginx:1.29.5-v1
+    depends_on:
+      - my-service-backend # 앱 서비스가 먼저 실행된 후 실행됨
+    build:
+      context: ./app/nginx  
+      dockerfile: nginx     
+    container_name: my-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - nginx-logs:/var/log/nginx
+    networks:
+      - public-subnet
+      - private-subnet
+
+  my-service-backend:
+    security_opt: ["apparmor:unconfined"]
+    image: fastapi:v1
+    build:
+      context: ./app/fastapi
+      dockerfile: fastapi
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    networks:
+      private-subnet:
+        ipv4_address: 10.0.1.10
+    expose:
+      - "8000"
+      
+networks:
+  public-subnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
+          ip_range: 10.0.0.0/24
+          gateway: 10.0.0.1
+  private-subnet:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.0.1.0/24
+          ip_range: 10.0.1.0/24
+
+# 로그 보관을 위한 볼륨 정의 (NFS)
+volumes:
+  nginx-logs: # 볼륨 이름 정의 : 도커볼륨, 도커 볼륨은 도커가 볼륨을 관리, /var/lib/docker/volumes/
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # nfsvers=4 혹은 (NFS 서버 설정에 맞춤), addr=서버IP, nolock(잠금 방지)
+      # nolock: NFS 서버는 여러 컨테이너가 동시 쓰기를 막고있어서 이를 해제
+      o: "addr=192.168.8.101,nfsvers=4,rw,nolock,soft,intr"
+      # NFS 서버 내의 실제 경로
+      # 주의: 반드시 콜론(:)으로 시작하고 NFS 서버의 공유된 디렉토리를 지정해야 합니다.
+      # 공유된 디렉토리 안에 여러 개의 디렉토리를 생성하여 사용해도 됩니다.
+      # 또한 새로 생성한 디렉토리에 777권한을 부여
+      device: ":/home/sy/DATA/nginx/logs"

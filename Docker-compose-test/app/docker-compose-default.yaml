@@ -1,0 +1,12 @@
+# version: '3.8' 생략할 경우 가장 최신버전으로 자동 지정
+# servieces: 컨테이너 정의, 멀티(여러) 컨테이너 정의가 가능하여 서비스 단위 관리가 가능
+# network: 네트워크 설정
+# volumes: 볼륨 설정, 다만 볼륨은 services 세션에서도 정의 가능
+# ###########################################################################
+version: '3.8'
+services: 
+  my-service: # 서비스 이름
+    image: nginx:1.29.5-alpine
+    container_name: my-nginx  # 컨테이너 이름
+    ports:
+      - "80:80"

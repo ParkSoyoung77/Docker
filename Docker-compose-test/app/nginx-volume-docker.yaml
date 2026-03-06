@@ -1,0 +1,14 @@
+services:
+  my-services:
+    image: nginx:1.29.5-v1
+    build:
+      context: ./app/nginx  
+      dockerfile: nginx     
+    container_name: my-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - nginx-logs:/var/log/nginx
+
+volumes:
+  nginx-logs: # 볼륨 이름 정의 : 도커볼륨, 도커 볼륨은 도커가 볼륨을 관리, /var/lib/docker/volumes/
