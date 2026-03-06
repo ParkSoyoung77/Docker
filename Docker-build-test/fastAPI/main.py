@@ -1,0 +1,9 @@
+import fatapi, uvicorn
+
+app = fastapi.FastAPI()
+@app.get("/")
+async def read_root():
+    return {"message": "Hellom Workld!"}
+
+# if __nama__ == "__main__":
+#       uvicorn.run("main:app", host='0.0.0.0', port=8000m reload=True)

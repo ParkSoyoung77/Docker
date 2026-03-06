@@ -1,0 +1,19 @@
+# 1. 대문 (Bastion) - 공인 IP 또는 외부 접근 IP
+Host bastion
+  HostName #배스천주소
+  User user
+  IdentifyFIle ~/.ssh/id_rsa
+  Port 22
+
+# 2. 내부 서버들 (Bastion을 거쳐서 접속)
+Host nfs
+  HostName #nfs주소
+  ProxyJump bastion
+  User user
+  IdentifyFIle ~/.ssh/id_rsa
+
+Host service
+  HostName #서비스주소
+  ProxyJump bastion
+  User user
+  IdentifyFIle ~/.ssh/id_rsa

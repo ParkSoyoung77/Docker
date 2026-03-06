@@ -1,0 +1,16 @@
+# 1. 공식 이미지 사용 (이것만 쓰면 Dockerfile이 필요 없지만...)
+FROM mysql:8.0
+
+# 2. 한글 설정을 미리 구워넣기 (개발자 편의성)
+# COPY ./my.cnf /etc/mysql/conf.d/my.cnf
+
+# 3. 컨테이너 실행 즉시 초기화 SQL 실행하도록 설정
+# /docker-entrypoint-initdb.d/ 폴더에 넣으면 실행 시 자동 실행됨
+COPY ./init.sql /docker-entrypoint-initdb.d/
+
+# 4. 환경 변수 기본값 설정 (선택 사항)
+ENV MYSQL_DATABASE=db
+ENV MYSQL_ROOT_PASSWORD=1234
+
+# CMD는 원본 이미지 자체에 들어가 있으므로 빠져도 무관
+CMD ["mysqld"]
